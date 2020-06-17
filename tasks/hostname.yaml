@@ -1,0 +1,5 @@
+---
+- name: set hostname
+  hostname:
+    name: "{{ hostname if hostname is defined else ansible_host }}"
+    use: systemd
