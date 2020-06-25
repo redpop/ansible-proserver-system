@@ -1,0 +1,30 @@
+- when: ansible_system == 'Linux'
+  block:
+    - name: Create directory for Ansible facts
+      loop:
+        - /etc/ansible/facts.d
+      file:
+        path: "{{ item }}"
+        state: directory
+
+    - name: Template proServer fact
+      loop:
+        - /usr/local/bin/proserver-facts
+      template:
+        src: proserver.fact.py
+        dest: "{{ item }}"
+        mode: a+x
+      register: linux_copy_proserver_fact
+
+    - name: Link proServer fact
+      loop:
+        - /etc/ansible/facts.d/proserver.fact
+      file:
+        src: /usr/local/bin/proserver-facts
+        dest: "{{ item }}"
+        state: link
+      register: linux_link_proserver_fact
+
+    - name: Reload facts
+      when: linux_copy_proserver_fact.changed or linux_link_proserver_fact.changed
+      setup: {}
