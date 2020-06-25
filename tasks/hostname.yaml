@@ -1,5 +1,5 @@
 ---
-- name: set hostname
+- name: Set hostname
+  when: system.hostname
   hostname:
-    name: "{{ hostname if hostname is defined else ansible_host }}"
-    use: systemd
+    name: "{{ system.hostname }}"

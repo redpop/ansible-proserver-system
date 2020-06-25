@@ -1,4 +1,5 @@
 system:
+  hostname:
   network:
     public_interfaces: []
     public_subnets: []
