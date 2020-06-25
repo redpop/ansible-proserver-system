@@ -1,0 +1,5 @@
+- name: Create proserver user
+  user:
+    name: proserver
+    home: /var/www
+    shell: /usr/bin/bash
