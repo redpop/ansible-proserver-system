@@ -27,4 +27,5 @@
 
     - name: Reload facts
       when: linux_copy_proserver_fact.changed or linux_link_proserver_fact.changed
+      changed_when: linux_copy_proserver_fact.changed or linux_link_proserver_fact.changed
       setup: {}
