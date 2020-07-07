@@ -1,5 +1,7 @@
 system:
   hostname:
+  apt:
+    proxy:
   network:
     public_interfaces: []
     public_subnets: []

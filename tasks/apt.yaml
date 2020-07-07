@@ -2,3 +2,12 @@
   apt:
     update_cache: yes
   changed_when: false
+
+- name: Configure apt proxy
+  when: system.apt.proxy
+  loop:
+    - /etc/apt/apt.conf.d/proxy.conf
+  copy:
+    content: |
+      Acquire::http::Proxy "{{ system.apt.proxy }}";
+    dest: "{{ item }}"
