@@ -2,4 +2,4 @@
   user:
     name: proserver
     home: /var/www
-    shell: /usr/bin/bash
+    shell: /bin/bash
