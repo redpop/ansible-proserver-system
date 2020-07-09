@@ -4,3 +4,4 @@
 - import_tasks: apt.yaml
 - import_tasks: proserver_fact.yaml
 - import_tasks: proserver_user.yaml
+- import_tasks: utilities.yaml

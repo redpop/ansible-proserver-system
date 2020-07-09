@@ -6,3 +6,5 @@ system:
   network:
     public_interfaces: []
     public_subnets: []
+  utilities:
+    apt: {}
