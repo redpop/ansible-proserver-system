@@ -8,3 +8,7 @@ system:
     public_subnets: []
   utilities:
     apt: {}
+  ufw:
+    state:
+    policy:
+    rules: {}
