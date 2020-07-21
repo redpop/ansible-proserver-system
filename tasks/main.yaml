@@ -1,7 +1,8 @@
 ---
+- import_tasks: proserver_fact.yaml
 - import_tasks: hostname.yaml
+- import_tasks: ufw.yaml
 - import_tasks: environment.yaml
 - import_tasks: apt.yaml
-- import_tasks: proserver_fact.yaml
-- import_tasks: proserver_user.yaml
 - import_tasks: utilities.yaml
+- import_tasks: proserver_user.yaml
