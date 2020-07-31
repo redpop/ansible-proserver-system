@@ -1,0 +1,11 @@
+- name: Template netplan config
+  loop: "{{ system.netplan|dict2items }}"
+  copy:
+    content: |
+      {{ item.value|to_nice_yaml(indent=2) }}
+    dest: "/etc/netplan/{{ item.key }}"
+  register: template_netplan_config_result
+
+- name: Apply netplan config
+  when: template_netplan_config_result.changed
+  command: netplan apply

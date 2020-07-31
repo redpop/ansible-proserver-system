@@ -1,6 +1,7 @@
 ---
 - import_tasks: proserver_fact.yaml
 - import_tasks: hostname.yaml
+- import_tasks: netplan.yaml
 - import_tasks: ufw.yaml
 - import_tasks: environment.yaml
 - import_tasks: apt.yaml
