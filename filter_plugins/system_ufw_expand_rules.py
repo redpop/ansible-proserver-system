@@ -3,22 +3,22 @@ from copy import deepcopy
 from typing import List, Dict
 
 
-class LinuxUFWExpandRules:
+class SystemUFWExpandRules:
     @staticmethod
     def expand_rules(rules: List) -> List:
-        rules = LinuxUFWExpandRules._expand_rules(rules, 'from_ip', ['from'])
-        rules = LinuxUFWExpandRules._expand_rules(rules, 'from_port')
-        rules = LinuxUFWExpandRules._expand_rules(rules, 'to_ip', ['to'])
-        rules = LinuxUFWExpandRules._expand_rules(rules, 'to_port', ['port'])
-        rules = LinuxUFWExpandRules._expand_rules(rules, 'interface')
-        rules = LinuxUFWExpandRules._expand_rules(rules, 'proto')
+        rules = SystemUFWExpandRules._expand_rules(rules, 'from_ip', ['from'])
+        rules = SystemUFWExpandRules._expand_rules(rules, 'from_port')
+        rules = SystemUFWExpandRules._expand_rules(rules, 'to_ip', ['to'])
+        rules = SystemUFWExpandRules._expand_rules(rules, 'to_port', ['port'])
+        rules = SystemUFWExpandRules._expand_rules(rules, 'interface')
+        rules = SystemUFWExpandRules._expand_rules(rules, 'proto')
         return rules
 
     @staticmethod
     def _expand_rules(rules: List, key: str, key_aliases=[]) -> List:
         expanded_rules = []
         for rule in rules:
-            expanded_rules.extend(LinuxUFWExpandRules._expand_rule(rule, 'value', key, key_aliases))
+            expanded_rules.extend(SystemUFWExpandRules._expand_rule(rule, 'value', key, key_aliases))
         return expanded_rules
 
     @staticmethod
@@ -54,10 +54,10 @@ class LinuxUFWExpandRules:
         return expanded_obj
 
 
-class LinuxUFWExpandRulesTest(unittest.TestCase):
+class SystemUFWExpandRulesTest(unittest.TestCase):
     def test_expand_rules(self):
         self.assertEqual(
-            LinuxUFWExpandRules.expand_rules(
+            SystemUFWExpandRules.expand_rules(
                 [
                     {
                         'key': 'foo',
@@ -229,7 +229,7 @@ class LinuxUFWExpandRulesTest(unittest.TestCase):
 class FilterModule:
     def filters(self):
         return {
-            'linux_ufw_expand_rules': LinuxUFWExpandRules.expand_rules,
+            'system_ufw_expand_rules': SystemUFWExpandRules.expand_rules,
         }
 
 

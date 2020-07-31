@@ -1,9 +1,14 @@
----
 - import_tasks: proserver_fact.yaml
+  when: system.features.proserver_fact
 - import_tasks: hostname.yaml
+  when: system.features.hostname
 - import_tasks: netplan.yaml
+  when: system.features.netplan
 - import_tasks: ufw.yaml
+  when: system.features.ufw
 - import_tasks: environment.yaml
+  when: system.features.environment
 - import_tasks: apt.yaml
-- import_tasks: utilities.yaml
+  when: system.features.apt
 - import_tasks: proserver_user.yaml
+  when: system.features.proserver_user

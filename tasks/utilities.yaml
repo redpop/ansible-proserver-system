@@ -1,4 +1,0 @@
-- name: Install utilities
-  when: ansible_distribution == 'Ubuntu'
-  apt:
-    name: "{{ system.utilities.apt.items()|selectattr('1', 'eq', true)|map(attribute='0')|list }}"

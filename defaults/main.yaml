@@ -1,15 +1,22 @@
 system:
-  hostname:
-  environment: {}
-  apt:
-    proxy:
+  features:
+    proserver_fact: no
+    hostname: yes
+    netplan: "{{ ansible_distribution == 'Ubuntu' }}"
+    ufw: "{{ ansible_distribution == 'Ubuntu' }}"
+    environment: yes
+    apt: "{{ ansible_distribution == 'Ubuntu' }}"
+    proserver_user: no
   network:
     public_interfaces: []
     public_subnets: []
-  utilities:
-    apt: {}
+  hostname:
   netplan: {}
   ufw:
     state:
     policy:
     rules: {}
+  environment: {}
+  apt:
+    proxy:
+    packages: {}

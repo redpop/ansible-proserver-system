@@ -11,3 +11,7 @@
     content: |
       Acquire::http::Proxy "{{ system.apt.proxy }}";
     dest: "{{ item }}"
+
+- name: Install apt packages
+  apt:
+    name: "{{ system.apt.packages.items()|selectattr('1', 'eq', true)|map(attribute='0')|list }}"
