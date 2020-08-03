@@ -1,0 +1,104 @@
+- when: ansible_system == 'FreeBSD'
+  block:
+    - name: Check if Postfix config exists
+      stat:
+        path: "{{ system.postfix.prefix.config }}"
+      register: system_check_if_postfix_config_exists_result
+
+    - when: not system_check_if_postfix_config_exists_result.stat.exists
+      block:
+        - name: Disable Sendmail
+          vars:
+            rc_conf: /etc/rc.conf
+          with_dict:
+            sendmail_enable: "NONE"
+            sendmail_submit_enable: "NO"
+            sendmail_outbound_enable: "NO"
+            sendmail_msp_queue_enable: "NO"
+          loop_control:
+            label: '{{ rc_conf }} {{ item.key }}="{{ item.value }}"'
+          lineinfile:
+            path: "{{ rc_conf }}"
+            regexp: "^(?:#[\\s\\t]*)?{{ item.key }}="
+            line: '{{ item.key }}="{{ item.value }}"'
+
+        - name: Stop Sendmail
+          service:
+            name: sendmail
+            state: stopped
+
+        - name: Create Postfix user
+          user:
+            name: postfix
+            uid: 125
+
+        - name: Create maildrop group
+          group:
+            name: maildrop
+            gid: 126
+
+        - name: Create directories for Postfix
+          loop:
+            - /var/spool/postfix
+          file:
+            path: "{{ item }}"
+            state: directory
+
+        - name: Copy Postfix config from etc-sample
+          command: rsync -a /usr/local/etc-sample/postfix/ {{ system.postfix.prefix.config|quote }}
+          notify: Restart Postfix
+
+        - name: Template mailer config
+          vars:
+            dest: /etc/mail/mailer.conf
+          with_dict:
+            sendmail: /usr/local/sbin/sendmail
+            mailq: /usr/local/sbin/sendmail
+            newaliases: /usr/local/sbin/sendmail
+            hoststat: /usr/local/sbin/sendmail
+            purgestat: /usr/local/sbin/sendmail
+          loop_control:
+            label: "{{ dest }} {{ item.key }}={{ item.value }}"
+          lineinfile:
+            path: "{{ dest }}"
+            regexp: '^{{ item.key|regex_escape }}\s+'
+            line: "{{ item.key }} {{ item.value }}"
+
+- name: Template Postfix hash maps
+  vars:
+    dest: "{{ item.key if item.key.startswith('/') else system.postfix.prefix.config + '/' + item.key }}"
+  loop: "{{ system.postfix.hash_maps|dict2items }}"
+  loop_control:
+    label: "{{ dest }}"
+  copy:
+    content: |
+      {% for key, value in item.value.items() %}
+      {{ key }} {{ value }}
+      {% endfor %}
+    dest: "{{ dest }}"
+  register: system_template_postfix_hash_maps
+
+- name: Rebuild Postfix hash maps
+  vars:
+    path: "{{ item.invocation.module_args.dest }}"
+  loop: "{{ system_template_postfix_hash_maps.results }}"
+  loop_control:
+    label: "{{ path }}"
+  when: item.changed
+  command: "postmap {{ path|quote }}"
+
+- name: Configure Postfix
+  loop: "{{ system.postfix['main.cf']|dict2items }}"
+  ini_file:
+    path: "{{ system.postfix.prefix.config }}/main.cf"
+    section:
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: "{{ 'absent' if item.value is none else 'present' }}"
+  notify: Restart Postfix
+
+- name: Enable Postfix
+  service:
+    name: postfix
+    enabled: yes
+  notify: Restart Postfix

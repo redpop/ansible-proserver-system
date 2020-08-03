@@ -7,6 +7,7 @@ system:
     environment: yes
     apt: "{{ ansible_distribution == 'Ubuntu' }}"
     proserver_user: no
+    postfix: no
   network:
     public_interfaces: []
     public_subnets: []
@@ -20,3 +21,13 @@ system:
   apt:
     proxy:
     packages: {}
+  postfix:
+    prefix:
+      config: >-
+        {%- if ansible_system == 'Linux' -%}
+          /etc/postfix
+        {%- else -%}
+          /usr/local/etc/postfix
+        {%- endif -%}
+    hash_maps: {}
+    main.cf: {}
