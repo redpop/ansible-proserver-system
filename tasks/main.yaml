@@ -12,3 +12,5 @@
   when: system.features.apt
 - import_tasks: proserver_user.yaml
   when: system.features.proserver_user
+- import_tasks: postfix.yaml
+  when: system.features.postfix
