@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!{{ system.proserver_fact.python }}
 
 import json
 import subprocess
@@ -28,6 +28,12 @@ class SystemDefaultRoutes(list):
         ).communicate()
         if not stdout:
             return []
+
+        # Workaround for older systemd versions where "ip route --json" is not available (e.g. Ubuntu 18.04, RHEL 7)
+        if not stdout.decode().startswith('['):
+            stdout = stdout.decode()
+            stdout = json.dumps([{'prefsrc': stdout[stdout.find('src ')+4:stdout.find(' ', stdout.find('src ')+4)]}])
+
         return json.loads(stdout)
 
     def __init__(self):

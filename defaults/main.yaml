@@ -8,6 +8,13 @@ system:
     apt: "{{ ansible_distribution == 'Ubuntu' }}"
     proserver_user: no
     postfix: no
+  proserver_fact:
+    python: >-
+      {%- if ansible_distribution == 'Ubuntu' and ansible_distribution_version == '18.04' -%}
+        /usr/bin/env python3.8
+      {%- else -%}
+        /usr/bin/env python3
+      {%- endif -%}
   network:
     public_interfaces: []
     public_subnets: []
