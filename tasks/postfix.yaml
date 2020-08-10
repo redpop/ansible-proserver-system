@@ -64,6 +64,11 @@
             regexp: '^{{ item.key|regex_escape }}\s+'
             line: "{{ item.key }} {{ item.value }}"
 
+- name: Install Postfix
+  when: ansible_distribution == 'Ubuntu'
+  apt:
+    name: postfix
+
 - name: Template Postfix hash maps
   vars:
     dest: "{{ item.key if item.key.startswith('/') else system.postfix.prefix.config + '/' + item.key }}"
