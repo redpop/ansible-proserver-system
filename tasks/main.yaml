@@ -14,3 +14,5 @@
   when: system.features.proserver_user
 - import_tasks: postfix.yaml
   when: system.features.postfix
+- import_tasks: sudoers.yaml
+  when: system.features.sudoers

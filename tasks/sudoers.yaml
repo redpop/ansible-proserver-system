@@ -1,0 +1,10 @@
+- name: Configure sudoers
+  vars:
+    dest: "{{ system.prefix.sudoers }}/sudoers.d/{{ item.key }}"
+  loop: "{{ system.sudoers|dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  copy:
+    content: "{{ item.value }}"
+    dest: "{{ dest }}"
+    validate: 'bash -c "cat /etc/sudoers %s | visudo -cf-"'

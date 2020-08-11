@@ -8,6 +8,14 @@ system:
     apt: "{{ ansible_distribution == 'Ubuntu' }}"
     proserver_user: no
     postfix: no
+    sudoers: yes
+  prefix:
+    sudoers: >-
+      {%- if ansible_system == 'Linux' -%}
+        /etc
+      {%- else -%}
+        /usr/local/etc
+      {%- endif -%}
   proserver_fact:
     python: >-
       {%- if ansible_distribution == 'Ubuntu' and ansible_distribution_version == '18.04' -%}
@@ -38,3 +46,4 @@ system:
         {%- endif -%}
     hash_maps: {}
     main.cf: {}
+  sudoers: {}
