@@ -1,0 +1,22 @@
+- name: Add authorized keys
+  loop: >-
+    {%- set user_authorized_key = [] -%}
+    {%- for user, user_info in system.users.items() -%}
+      {%- for authorized_key_list in (user_info.authorized_keys|default([], true)).values() -%}
+        {%- if authorized_key_list is string -%}
+          {%- set authorized_key_list = [authorized_key_list] -%}
+        {%- endif -%}
+        {%- for authorized_key in (authorized_key_list or []) -%}
+          {%- set _ = user_authorized_key.append({
+            'user': user,
+            'key': authorized_key,
+          }) -%}
+        {%- endfor -%}
+      {%- endfor -%}
+    {%- endfor -%}
+    {{- user_authorized_key -}}
+  loop_control:
+    label: '{{ item.user }} public_key="{{ item.key }}"'
+  authorized_key:
+    user: "{{ item.user }}"
+    key: "{{ item.key }}"

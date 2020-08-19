@@ -9,6 +9,7 @@ system:
     proserver_user: no
     postfix: no
     sudoers: yes
+    authorized_keys: yes
   prefix:
     sudoers: >-
       {%- if ansible_system == 'Linux' -%}
@@ -47,3 +48,4 @@ system:
     hash_maps: {}
     main.cf: {}
   sudoers: {}
+  users: {}

@@ -16,3 +16,5 @@
   when: system.features.postfix
 - import_tasks: sudoers.yaml
   when: system.features.sudoers
+- import_tasks: authorized_keys.yaml
+  when: system.features.authorized_keys
