@@ -1,0 +1,16 @@
+- name: Get current OS version
+  when: ansible_system == 'FreeBSD'
+  check_mode: no
+  shell: |
+    uname -v | sed -e 's,^\([^#]*\) #\(.* [1-2][0-9][0-9][0-9]\).*/\([^\]*\) $,\1 (\3) #\2,'
+  register: system_motd_uname_shell_result
+  changed_when: no
+
+- name: Template Message of the Day
+  loop:
+    - /etc/motd
+  loop_control:
+    label: "{{ item }}"
+  template:
+    src: motd/motd.j2
+    dest: "{{ item }}"

@@ -11,6 +11,7 @@ system:
     postfix: no
     sudoers: yes
     authorized_keys: yes
+    motd: no
   prefix:
     sudoers: >-
       {%- if ansible_system == 'Linux' -%}
@@ -51,3 +52,6 @@ system:
     main.cf: {}
   sudoers: {}
   users: {}
+  motd:
+    project:
+    details: "{{ (((dehydrated|default({})).domains|default({})).keys()|list + ((dehydrated|default({})).domains|default({})).values()|list|sum(start=[]))|reject('eq', inventory_hostname)|reject('eq', ansible_nodename)|system_motd_sort_fqdns }}"
