@@ -2,6 +2,8 @@
   when: system.features.proserver_fact
 - import_tasks: hostname.yaml
   when: system.features.hostname
+- import_tasks: timezone.yaml
+  when: system.features.timezone
 - import_tasks: netplan.yaml
   when: system.features.netplan
 - import_tasks: ufw.yaml

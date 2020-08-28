@@ -2,6 +2,7 @@ system:
   features:
     proserver_fact: no
     hostname: yes
+    timezone: yes
     netplan: "{{ ansible_distribution == 'Ubuntu' }}"
     ufw: "{{ ansible_distribution == 'Ubuntu' }}"
     environment: yes
@@ -28,6 +29,7 @@ system:
     public_interfaces: []
     public_subnets: []
   hostname:
+  timezone:
   netplan: {}
   ufw:
     state:

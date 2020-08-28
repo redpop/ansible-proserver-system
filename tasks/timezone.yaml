@@ -1,0 +1,6 @@
+- name: Set timezone
+  when: system.timezone
+  loop:
+    - "{{ system.timezone }}"
+  timezone:
+    name: "{{ item }}"
