@@ -5,6 +5,7 @@ system:
     timezone: yes
     netplan: "{{ ansible_distribution == 'Ubuntu' }}"
     ufw: "{{ ansible_distribution == 'Ubuntu' }}"
+    hosts: yes
     environment: yes
     apt: "{{ ansible_distribution == 'Ubuntu' }}"
     proserver_user: no
@@ -37,6 +38,7 @@ system:
     state:
     policy:
     rules: {}
+  hosts: {}
   environment: {}
   apt:
     proxy:
