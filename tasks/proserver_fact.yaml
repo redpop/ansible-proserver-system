@@ -1,3 +1,4 @@
+  # This is a fallback for Ubuntu 18.04 and will not be needed in Versions greater 18.04
 - name: Install Python 3.8
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == '18.04'
   apt:
