@@ -8,6 +8,8 @@
   when: system.features.netplan
 - import_tasks: ufw.yaml
   when: system.features.ufw
+- import_tasks: sysctl.yaml
+  when: system.features.sysctl
 - import_tasks: hosts.yaml
   when: system.features.hosts
 - import_tasks: environment.yaml

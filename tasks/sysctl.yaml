@@ -1,0 +1,5 @@
+- name: Set sysctl entries
+  loop: "{{ system.sysctl|dict2items }}"
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"

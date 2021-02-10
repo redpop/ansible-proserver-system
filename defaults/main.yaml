@@ -5,6 +5,7 @@ system:
     timezone: yes
     netplan: "{{ ansible_distribution == 'Ubuntu' }}"
     ufw: "{{ ansible_distribution == 'Ubuntu' }}"
+    sysctl: "{{ ansible_distribution == 'Ubuntu' }}"
     hosts: yes
     environment: yes
     apt: "{{ ansible_distribution == 'Ubuntu' }}"
@@ -38,6 +39,7 @@ system:
     state:
     policy:
     rules: {}
+  sysctl: {}
   hosts: {}
   environment: {}
   apt:
