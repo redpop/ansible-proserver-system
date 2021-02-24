@@ -1,10 +1,10 @@
 - name: Update hosts file
   vars:
     hosts: "{{ system.hosts.values()|select('string')|reject('eq', '')|list }}"
-  when: "hosts|length > 0"
   loop:
     - /etc/hosts
   blockinfile:
     path: "{{ item }}"
     block: "{{ hosts|join('\n') }}"
     marker: "# {mark} ANSIBLE MANAGED BLOCK (system)"
+    state: "{{ 'present' if hosts|length > 0 else 'absent' }}"
