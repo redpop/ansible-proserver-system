@@ -6,6 +6,8 @@
   when: system.features.timezone
 - import_tasks: netplan.yaml
   when: system.features.netplan
+- import_tasks: apt.yaml
+  when: system.features.apt
 - import_tasks: ufw.yaml
   when: system.features.ufw
 - import_tasks: sysctl.yaml
@@ -14,8 +16,6 @@
   when: system.features.hosts
 - import_tasks: environment.yaml
   when: system.features.environment
-- import_tasks: apt.yaml
-  when: system.features.apt
 - import_tasks: proserver_user.yaml
   when: system.features.proserver_user
 - import_tasks: postfix.yaml

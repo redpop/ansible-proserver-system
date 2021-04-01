@@ -1,3 +1,7 @@
+- name: Install UFW
+  apt:
+    name: ufw
+
 - name: Reset UFW
   when: system.ufw.reset
   ufw:
