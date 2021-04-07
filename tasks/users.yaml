@@ -1,0 +1,10 @@
+- name: Create users
+  loop: "{{ system.users|dict2items|list }}"
+  loop_control:
+    label: "{{ item.key }}"
+  user:
+    name: "{{ item.key }}"
+    comment: "{{ item.full_name|default(omit, true) }}"
+    groups: "{{ item.value.groups|default({}, true)|dict2items|selectattr('value', 'eq', true)|map(attribute='key')|list }}"
+    append: yes
+    shell: "{{ item.value.shell|default('/bin/bash', true) }}"

@@ -11,6 +11,7 @@ system:
     apt: "{{ ansible_distribution == 'Ubuntu' }}"
     proserver_user: no
     postfix: no
+    users: yes
     sudoers: yes
     authorized_keys: yes
     motd: no
