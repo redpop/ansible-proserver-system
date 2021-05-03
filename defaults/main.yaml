@@ -57,6 +57,7 @@ system:
     hash_maps: {}
     main.cf: {}
   sudoers: {}
+  groups: {}
   users: {}
   motd:
     project:

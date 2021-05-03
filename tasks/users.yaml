@@ -1,3 +1,10 @@
+- name: Create groups
+  loop: "{{ system.groups|dict2items|list }}"
+  loop_control:
+    label: "{{ item.key }}"
+  group:
+    name: "{{ item.key }}"
+
 - name: Create users
   loop: "{{ system.users|dict2items|list }}"
   loop_control:
