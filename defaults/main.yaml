@@ -36,7 +36,7 @@ system:
   timezone:
   netplan: {}
   ufw:
-    reset: "{{ system_ufw_reset }}"
+    reset: "{{ system_ufw_reset|bool }}"
     state:
     policy:
     rules: {}
