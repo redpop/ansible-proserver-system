@@ -1,0 +1,6 @@
+- name: resolv.conf links to stub-resolv.conf of systemd-resolved
+  file:
+    src: /run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: yes

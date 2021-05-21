@@ -6,6 +6,8 @@
   when: system.features.timezone
 - import_tasks: netplan.yaml
   when: system.features.netplan
+- import_tasks: systemd_resolved.yaml
+  when: system.features.systemd_resolved
 - import_tasks: apt.yaml
   when: system.features.apt
 - import_tasks: ufw.yaml

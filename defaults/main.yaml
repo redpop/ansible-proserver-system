@@ -4,6 +4,7 @@ system:
     hostname: yes
     timezone: yes
     netplan: "{{ ansible_distribution == 'Ubuntu' }}"
+    systemd_resolved: no
     ufw: "{{ ansible_distribution == 'Ubuntu' }}"
     sysctl: "{{ ansible_distribution == 'Ubuntu' }}"
     hosts: yes
