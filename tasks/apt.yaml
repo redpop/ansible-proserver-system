@@ -1,3 +1,8 @@
+- name: Install GPG on Ubuntu
+  apt:
+    name: gpg
+  when: ansible_distribution == 'Ubuntu'
+
 - name: Remove legacy NodeSource repository
   file:
     path: /etc/apt/sources.list.d/deb_nodesource_com_node_14_x.list
