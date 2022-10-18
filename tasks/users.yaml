@@ -1,17 +1,60 @@
+- name: Check if the list of users from the previous run exists
+  ansible.builtin.stat:
+    path: "{{ system.prefix.sudoers }}/zz-ansible-users.list"
+  register: old_users
+
+- name: Handle the old users deletion
+  when: old_users.stat.exists
+  block:
+    - name: Fetch old users list
+      ansible.builtin.slurp:
+        path: "{{ system.prefix.sudoers }}/zz-ansible-users.list"
+      register: old_users_contents
+
+    - name: Specify the users for deletion
+      ansible.builtin.set_fact:
+        old_users_var: "{{ old_users_contents.content | b64decode | from_json | difference(system.users) }}"
+
+    - name: Remove old users
+      register: users_deleted
+      ansible.builtin.user:
+        name: "{{ item }}"
+        state: absent
+        force: yes
+      loop: "{{ old_users_var }}"
+
 - name: Create groups
-  loop: "{{ system.groups|dict2items|list }}"
+  ansible.builtin.group:
+    name: "{{ item.key }}"
+  loop: "{{ system.groups | dict2items | list }}"
   loop_control:
     label: "{{ item.key }}"
-  group:
-    name: "{{ item.key }}"
 
 - name: Create users
-  loop: "{{ system.users|dict2items|list }}"
+  register: users_created
+  ansible.builtin.user:
+    name: "{{ item.key }}"
+    comment: "{{ item.full_name | default(omit, true) }}"
+    groups: >-
+      {{
+      item.value.groups |
+      default({}, true) |
+      dict2items |
+      selectattr('value', 'eq', true) |
+      map(attribute='key') |
+      list
+      }}
+    append: yes
+    shell: "{{ item.value.shell | default('/bin/bash', true) }}"
+  loop: "{{ system.users | dict2items | list }}"
   loop_control:
     label: "{{ item.key }}"
-  user:
-    name: "{{ item.key }}"
-    comment: "{{ item.full_name|default(omit, true) }}"
-    groups: "{{ item.value.groups|default({}, true)|dict2items|selectattr('value', 'eq', true)|map(attribute='key')|list }}"
-    append: yes
-    shell: "{{ item.value.shell|default('/bin/bash', true) }}"
+
+- name: Copy a list of current users to the target host
+  when: (users_deleted is defined and users_deleted.changed) or users_created.changed
+  ansible.builtin.copy:
+    dest: "{{ system.prefix.sudoers }}/zz-ansible-users.list"
+    owner: root
+    group: root
+    mode: 0644
+    content: "{{ system.users }}"
