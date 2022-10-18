@@ -15,6 +15,13 @@
       ansible.builtin.set_fact:
         old_users_var: "{{ old_users_contents.content | b64decode | from_json | difference(system.users) }}"
 
+    - name: Fail if all users are about to be deleted
+      when: (old_users_var | length > 0) and (system.users | length == 0)
+      ansible.builtin.fail:
+        msg: |
+          system['users'] is empty, which means that you're about to delete ALL USERS on your target host
+          This is very dangerous and will most likely break your system.
+        
     - name: Fail if the current Ansible user is about to get deleted
       when: ansible_user in old_users_var
       ansible.builtin.fail:
