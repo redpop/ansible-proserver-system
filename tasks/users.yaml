@@ -65,7 +65,6 @@
     label: "{{ item.key }}"
 
 - name: Copy a list of current users to the target host
-  when: (users_deleted is defined and users_deleted.changed) or users_created.changed
   ansible.builtin.copy:
     dest: "{{ system.prefix.sudoers }}/zz-ansible-users.list"
     owner: root
