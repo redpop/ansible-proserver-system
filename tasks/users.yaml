@@ -3,7 +3,7 @@
     path: "{{ system.prefix.sudoers }}/zz-ansible-users.list"
   register: old_users
 
-- name: Handle the old users deletion
+- name: Handle the automatic old users deletion
   when: old_users.stat.exists
   block:
     - name: Fetch old users list
@@ -11,12 +11,19 @@
         path: "{{ system.prefix.sudoers }}/zz-ansible-users.list"
       register: old_users_contents
 
-    - name: Specify the users for deletion
+    - name: Specify the users to be deleted automatically
       ansible.builtin.set_fact:
-        old_users_var: "{{ old_users_contents.content | b64decode | from_json | difference(system.users) }}"
+        old_users_from_file: "{{ old_users_contents.content | b64decode | from_json | difference(system.users) }}"
 
+- name: Specify the users to be deleted manually
+  ansible.builtin.set_fact:
+    old_users_var: "{{ old_users_from_file | default([]) + system.users_delete }}"
+
+- name: Delete the users specified for deletion
+  when: old_users_var | length > 0
+  block:
     - name: Fail if all users are about to be deleted
-      when: (old_users_var | length > 0) and (system.users | length == 0)
+      when: system.users | length == 0
       ansible.builtin.fail:
         msg: |
           system['users'] is empty, which means that you're about to delete ALL USERS on your target host
@@ -35,6 +42,12 @@
         name: "{{ item }}"
         state: absent
         force: yes
+      loop: "{{ old_users_var }}"
+
+    - name: Remove the old users' home directories
+      ansible.builtin.file:
+        path: "/home/{{ item }}"
+        state: absent
       loop: "{{ old_users_var }}"
 
 - name: Create groups
