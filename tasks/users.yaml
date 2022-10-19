@@ -30,7 +30,7 @@
           This is very dangerous and will most likely break your system.
         
     - name: Fail if the current Ansible user is about to get deleted
-      when: ansible_user in old_users_var
+      when: (ansible_user | default("")) in old_users_var
       ansible.builtin.fail:
         msg: |
           User {{ ansible_user }} can not be removed, since it's being used to run the current Ansible playbook
