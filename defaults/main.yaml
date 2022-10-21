@@ -15,6 +15,7 @@ system:
     users: yes
     sudoers: yes
     authorized_keys: yes
+    authorized_keys_delete: no
     motd: no
   prefix:
     sudoers: >-
