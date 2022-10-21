@@ -1,5 +1,5 @@
 ---
-- name: Handle old key removal
+- name: Template the auhtorized_keys out
   when: system.features.authorized_keys_delete | default(False)
   block:
     - name: Ensure that the .ssh folder exists
@@ -10,32 +10,18 @@
         owner: "{{ item }}"
       loop: "{{ system.users.keys() }}"
 
-    - name: Ensure that the authorized_keys file exists
-      ansible.builtin.file:
-        path: "/home/{{ item }}/.ssh/authorized_keys"
-        state: touch
-        modification_time: preserve
-        access_time: preserve
+    - name: Template out the authorized_keys
+      ansible.builtin.template:
+        dest: "/home/{{ item }}/.ssh/authorized_keys"
+        owner: "{{ item }}"
+        mode: 0600
+        src: authorized_keys.j2
       loop: "{{ system.users.keys() }}"
-
-    - name: Create a backup of current authorized keys
-      changed_when: false
-      ansible.builtin.copy:
-        remote_src: yes
-        src: "/home/{{ item }}/.ssh/authorized_keys"
-        dest: "/home/{{ item }}/.ssh/authorized_keys.bak"
-      loop: "{{ system.users.keys() }}"
-
-    - name: Clear authorized keys
-      changed_when: false
-      ansible.builtin.file:
-        state: absent
-        path: "/home/{{ item }}/.ssh/authorized_keys"
-      loop: "{{ system.users.keys() }}"
+      vars:
+        ssh_user: "{{ item }}"
 
 - name: Add authorized keys
-  register: authorized_keys_added
-  changed_when: authorized_keys_added.changed and not (system.features.authorized_keys_delete | default(False))
+  when: not system.features.authorized_keys_delete | default(False)
   loop: >-
     {%- set user_authorized_key = [] -%}
     {%- for user, user_info in system.users.items() -%}
@@ -57,21 +43,3 @@
   authorized_key:
     user: "{{ item.user }}"
     key: "{{ item.key }}"
-
-- name: Clean up after key removal
-  when: system.features.authorized_keys_delete | default(False)
-  block:
-    - name: Check if any keys have been added or removed
-      ansible.builtin.shell:
-        cmd: "diff /home/{{ item }}/.ssh/authorized_keys /home/{{ item }}/.ssh/authorized_keys.bak"
-      register: diff_output
-      failed_when: "diff_output.rc > 1"
-      changed_when: "diff_output.rc > 0"
-      loop: "{{ system.users.keys() }}"
-
-    - name: Remove the backup file
-      changed_when: false
-      ansible.builtin.file:
-        path: "/home/{{ item }}/.ssh/authorized_keys.bak"
-        state: absent
-      loop: "{{ system.users.keys() }}"
