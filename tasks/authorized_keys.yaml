@@ -1,4 +1,27 @@
+---
+- name: Template the auhtorized_keys out
+  when: system.features.authorized_keys_delete | default(False)
+  block:
+    - name: Ensure that the .ssh folder exists
+      ansible.builtin.file:
+        path: "/home/{{ item }}/.ssh"
+        state: directory
+        mode: 0700
+        owner: "{{ item }}"
+      loop: "{{ system.users.keys() }}"
+
+    - name: Template out the authorized_keys
+      ansible.builtin.template:
+        dest: "/home/{{ item }}/.ssh/authorized_keys"
+        owner: "{{ item }}"
+        mode: 0600
+        src: authorized_keys.j2
+      loop: "{{ system.users.keys() }}"
+      vars:
+        ssh_user: "{{ item }}"
+
 - name: Add authorized keys
+  when: not system.features.authorized_keys_delete | default(False)
   loop: >-
     {%- set user_authorized_key = [] -%}
     {%- for user, user_info in system.users.items() -%}
