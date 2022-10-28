@@ -1,45 +1,31 @@
 ---
-- name: Template the auhtorized_keys out
-  when: system.features.authorized_keys_delete | default(False)
-  block:
-    - name: Ensure that the .ssh folder exists
-      ansible.builtin.file:
-        path: "/home/{{ item }}/.ssh"
-        state: directory
-        mode: 0700
-        owner: "{{ item }}"
-      loop: "{{ system.users.keys() }}"
-
-    - name: Template out the authorized_keys
-      ansible.builtin.template:
-        dest: "/home/{{ item }}/.ssh/authorized_keys"
-        owner: "{{ item }}"
-        mode: 0600
-        src: authorized_keys.j2
-      loop: "{{ system.users.keys() }}"
-      vars:
-        ssh_user: "{{ item }}"
+- name: Set the authorized_keys variable
+  ansible.builtin.set_fact:
+    user_authorized_keys: >-
+      {%- set user_authorized_key_pairs = [] -%}
+      {%- for user, user_info in system.users.items() -%}
+        {%- set user_authorized_key_list = [] -%}
+        {%- for authorized_key_list in (user_info.authorized_keys|default([], true)).values() -%}
+          {%- if authorized_key_list is string -%}
+            {%- set _ = user_authorized_key_list.append(authorized_key_list) -%}
+          {%- else -%}
+            {%- for a in authorized_key_list -%}
+              {%- set _ = user_authorized_key_list.append(a) -%}
+            {%- endfor -%}
+          {%- endif -%}
+        {%- endfor -%}
+          {%- set _ = user_authorized_key_pairs.append({
+            'user': user,
+            'key': (user_authorized_key_list | join('\n')),
+          }) -%}
+      {%- endfor -%}
+      {{- user_authorized_key_pairs -}}
 
 - name: Add authorized keys
-  when: not system.features.authorized_keys_delete | default(False)
-  loop: >-
-    {%- set user_authorized_key = [] -%}
-    {%- for user, user_info in system.users.items() -%}
-      {%- for authorized_key_list in (user_info.authorized_keys|default([], true)).values() -%}
-        {%- if authorized_key_list is string -%}
-          {%- set authorized_key_list = [authorized_key_list] -%}
-        {%- endif -%}
-        {%- for authorized_key in (authorized_key_list or []) -%}
-          {%- set _ = user_authorized_key.append({
-            'user': user,
-            'key': authorized_key,
-          }) -%}
-        {%- endfor -%}
-      {%- endfor -%}
-    {%- endfor -%}
-    {{- user_authorized_key -}}
+  loop: "{{ user_authorized_keys }}"
   loop_control:
-    label: '{{ item.user }} public_key="{{ item.key }}"'
-  authorized_key:
+    label: '{{ item.user }} public_keys="{{ item.key }}"'
+  ansible.builtin.authorized_key:
     user: "{{ item.user }}"
     key: "{{ item.key }}"
+    exclusive: "{{ system.features.authorized_keys_delete | default(False) }}"

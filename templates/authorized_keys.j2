@@ -1,9 +1,0 @@
-{% for name, key in system['users'][ssh_user]['authorized_keys'].items() %}
-{% if (key | type_debug == 'list') %}
-{% for k in key %}
-{{ k }}
-{% endfor %}
-{% else %}
-{{ key }}
-{% endif %}
-{% endfor %}
