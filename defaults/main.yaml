@@ -1,4 +1,10 @@
 system:
+  root_group: >-
+    {%- if ansible_system == 'Linux' and ansible_distribution == 'Ubuntu' -%}
+      root
+    {%- else -%}
+      wheel
+    {%- endif -%}
   features:
     proserver_fact: no
     hostname: yes

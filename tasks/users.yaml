@@ -81,6 +81,6 @@
   ansible.builtin.copy:
     dest: "{{ system.prefix.sudoers }}/zz-ansible-users.list"
     owner: root
-    group: root
+    group: "{{ system.root_group }}"
     mode: 0644
     content: "{{ system.users }}"
