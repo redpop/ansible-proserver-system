@@ -22,9 +22,10 @@
     dest: /etc/apt/sources.list.d/nodesource.list
   when: nodejs.version is defined
 
-- name: Update apt cache
+- name: Update apt cache and remove unneeded packages
   apt:
     update_cache: yes
+    autoremove: yes
   changed_when: false
 
 - name: Configure apt proxy
