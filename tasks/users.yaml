@@ -20,7 +20,7 @@
     old_users_var: "{{ old_users_from_file | default([]) + system.users_delete }}"
 
 - name: Delete the users specified for deletion
-  when: old_users_var | length > 0
+  when: (old_users_var | length > 0) and ansible_user != 'FreeBSD'
   block:
     - name: Fail if all users are about to be deleted
       when: system.users | length == 0
