@@ -1,13 +1,8 @@
 {% if ansible_system == 'FreeBSD' %}
 {{ system_motd_uname_shell_result.stdout }}
-punkt.de        ____
- _ __  _ __ ___/ ___|  ___ _ ____   _____ _ __
-| '_ \| '__/ _ \___ \ / _ \ '__\ \ / / _ \ '__|
-| |_) | | | (_) |__) |  __/ |   \ V /  __/ |
-| .__/|_|  \___/____/ \___|_|    \_/ \___|_|
-|_|
-
 {% endif %}
+{{ system.motd.banner_string }}
+
 {% if system.motd.project %}{{ system.motd.project }} / {% endif %}{{ inventory_hostname }}{% if inventory_hostname != ansible_nodename %} ({{ ansible_nodename }}){% endif %}
 
 {% filter trim %}
