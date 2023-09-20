@@ -1,36 +1,33 @@
-  # This is a fallback for Ubuntu 18.04 and will not be needed in Versions greater 18.04
+# This is a fallback for Ubuntu 18.04 and will not be needed in Versions greater 18.04
 - name: Install Python 3.8
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == '18.04'
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
     name: python3.8
 
 - name: Create directory for Ansible facts
-  loop:
-    - /etc/ansible/facts.d
-  file:
-    path: "{{ item }}"
+  ansible.builtin.file:
+    mode: "0755"
+    owner: root
+    path: "/etc/ansible/facts.d"
     state: directory
 
 - name: Template proServer fact
-  loop:
-    - /usr/local/bin/proserver-facts
-  template:
+  ansible.builtin.template:
+    owner: root
     src: proserver.fact.py
-    dest: "{{ item }}"
+    dest: "/usr/local/bin/proserver-facts"
     mode: a+x
   register: system_template_proserver_fact_result
 
 - name: Link proServer fact
-  loop:
-    - /etc/ansible/facts.d/proserver.fact
-  file:
+  ansible.builtin.file:
     src: /usr/local/bin/proserver-facts
-    dest: "{{ item }}"
+    dest: "/etc/ansible/facts.d/proserver.fact"
     state: link
   register: system_link_proserver_fact_result
 
 - name: Reload facts
   when: system_template_proserver_fact_result.changed or system_link_proserver_fact_result.changed
   changed_when: system_template_proserver_fact_result.changed or system_link_proserver_fact_result.changed
-  setup: {}
+  ansible.builtin.setup: {}

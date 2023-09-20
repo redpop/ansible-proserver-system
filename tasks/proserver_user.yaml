@@ -1,5 +1,5 @@
 - name: Create proserver user
-  user:
+  ansible.builtin.user:
     name: proserver
     home: /var/www
     shell: /bin/bash

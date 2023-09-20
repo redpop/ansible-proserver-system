@@ -25,7 +25,7 @@
   loop: "{{ user_authorized_keys }}"
   loop_control:
     label: '{{ item.user }} public_keys="{{ item.key }}"'
-  ansible.builtin.authorized_key:
+  ansible.posix.authorized_key:
     user: "{{ item.user }}"
     key: "{{ item.key }}"
     exclusive: "{{ system.features.authorized_keys_delete | default(False) }}"

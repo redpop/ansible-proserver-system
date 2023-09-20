@@ -1,32 +1,47 @@
-- import_tasks: proserver_fact.yaml
+- ansible.builtin.include_tasks: proserver_fact.yaml
   when: system.features.proserver_fact
-- import_tasks: hostname.yaml
+
+- ansible.builtin.include_tasks: hostname.yaml
   when: system.features.hostname
-- import_tasks: timezone.yaml
+
+- ansible.builtin.include_tasks: timezone.yaml
   when: system.features.timezone
-- import_tasks: netplan.yaml
+
+- ansible.builtin.include_tasks: netplan.yaml
   when: system.features.netplan
-- import_tasks: systemd_resolved.yaml
+
+- ansible.builtin.include_tasks: systemd_resolved.yaml
   when: system.features.systemd_resolved
-- import_tasks: apt.yaml
+
+- ansible.builtin.include_tasks: apt.yaml
   when: system.features.apt
-- import_tasks: ufw.yaml
+
+- ansible.builtin.include_tasks: ufw.yaml
   when: system.features.ufw
-- import_tasks: sysctl.yaml
+
+- ansible.builtin.include_tasks: sysctl.yaml
   when: system.features.sysctl
-- import_tasks: hosts.yaml
+
+- ansible.builtin.include_tasks: hosts.yaml
   when: system.features.hosts
-- import_tasks: environment.yaml
+
+- ansible.builtin.include_tasks: environment.yaml
   when: system.features.environment
-- import_tasks: proserver_user.yaml
+
+- ansible.builtin.include_tasks: proserver_user.yaml
   when: system.features.proserver_user
-- import_tasks: postfix.yaml
+
+- ansible.builtin.include_tasks: postfix.yaml
   when: system.features.postfix
-- import_tasks: users.yaml
+
+- ansible.builtin.include_tasks: users.yaml
   when: system.features.users
-- import_tasks: sudoers.yaml
+
+- ansible.builtin.include_tasks: sudoers.yaml
   when: system.features.sudoers
-- import_tasks: authorized_keys.yaml
+
+- ansible.builtin.include_tasks: authorized_keys.yaml
   when: system.features.authorized_keys
-- import_tasks: motd.yaml
+
+- ansible.builtin.include_tasks: motd.yaml
   when: system.features.motd
