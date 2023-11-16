@@ -1,4 +1,4 @@
 - name: Set hostname
   when: system.hostname
-  hostname:
+  ansible.builtin.hostname:
     name: "{{ system.hostname }}"

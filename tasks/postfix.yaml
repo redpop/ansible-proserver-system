@@ -1,11 +1,13 @@
-- when: ansible_system == 'FreeBSD'
+- name: Handle Postfix configuration on FreeBSD
+  when: ansible_system == 'FreeBSD'
   block:
     - name: Check if Postfix config exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ system.postfix.prefix.config }}"
       register: system_check_if_postfix_config_exists_result
 
-    - when: not system_check_if_postfix_config_exists_result.stat.exists
+    - name: Handle the Postfix configuration if no configuration exists yet
+      when: not system_check_if_postfix_config_exists_result.stat.exists
       block:
         - name: Disable Sendmail
           vars:
@@ -17,35 +19,40 @@
             sendmail_msp_queue_enable: "NO"
           loop_control:
             label: '{{ rc_conf }} {{ item.key }}="{{ item.value }}"'
-          lineinfile:
+          ansible.builtin.lineinfile:
             path: "{{ rc_conf }}"
             regexp: "^(?:#[\\s\\t]*)?{{ item.key }}="
             line: '{{ item.key }}="{{ item.value }}"'
 
         - name: Stop Sendmail
-          service:
+          ansible.builtin.service:
             name: sendmail
             state: stopped
 
         - name: Create Postfix user
-          user:
+          ansible.builtin.user:
             name: postfix
             uid: 125
 
         - name: Create maildrop group
-          group:
+          ansible.builtin.group:
             name: maildrop
             gid: 126
 
         - name: Create directories for Postfix
-          loop:
-            - /var/spool/postfix
-          file:
-            path: "{{ item }}"
+          ansible.builtin.file:
+            owner: root
+            mode: "0755"
+            path: "/var/spool/postfix"
             state: directory
 
         - name: Copy Postfix config from etc-sample
-          command: rsync -a /usr/local/etc-sample/postfix/ {{ system.postfix.prefix.config|quote }}
+          ansible.builtin.copy:
+            src: /usr/local/etc-sample/postfix/ 
+            owner: root
+            mode: "0755"
+            dest: "{{ system.postfix.prefix.config | quote }}"
+            remote_src: yes
           notify: Restart Postfix
 
         - name: Template mailer config
@@ -59,23 +66,25 @@
             purgestat: /usr/local/sbin/sendmail
           loop_control:
             label: "{{ dest }} {{ item.key }}={{ item.value }}"
-          lineinfile:
+          ansible.builtin.lineinfile:
             path: "{{ dest }}"
-            regexp: '^{{ item.key|regex_escape }}\s+'
+            regexp: '^{{ item.key | regex_escape }}\s+'
             line: "{{ item.key }} {{ item.value }}"
 
 - name: Install Postfix
   when: ansible_distribution == 'Ubuntu'
-  apt:
+  ansible.builtin.package:
     name: postfix
 
 - name: Template Postfix hash maps
   vars:
     dest: "{{ item.key if item.key.startswith('/') else system.postfix.prefix.config + '/' + item.key }}"
-  loop: "{{ system.postfix.hash_maps|dict2items }}"
+  loop: "{{ system.postfix.hash_maps | dict2items }}"
   loop_control:
     label: "{{ dest }}"
-  copy:
+  ansible.builtin.copy:
+    owner: root
+    mode: "0644"
     content: |
       {% for key, value in item.value.items() %}
       {{ key }} {{ value }}
@@ -90,11 +99,15 @@
   loop_control:
     label: "{{ path }}"
   when: item.changed
-  command: "postmap {{ path|quote }}"
+  changed_when: yes
+  ansible.builtin.command: 
+    cmd: "postmap {{ path | quote }}"
 
 - name: Configure Postfix
-  loop: "{{ system.postfix['main.cf']|dict2items }}"
-  ini_file:
+  loop: "{{ system.postfix['main.cf'] | dict2items }}"
+  community.general.ini_file:
+    owner: root
+    mode: "0644"
     path: "{{ system.postfix.prefix.config }}/main.cf"
     section:
     option: "{{ item.key }}"
@@ -103,7 +116,7 @@
   notify: Restart Postfix
 
 - name: Enable Postfix
-  service:
+  ansible.builtin.service:
     name: postfix
     enabled: yes
   notify: Restart Postfix

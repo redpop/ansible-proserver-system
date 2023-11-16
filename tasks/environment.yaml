@@ -1,11 +1,11 @@
 - name: Set global environment variables
-  loop: "{{ system.environment|dict2items }}"
+  loop: "{{ system.environment | dict2items }}"
   loop_control:
-    label: "{{ path }} {{ item.key }}={% if item.value is not none %}{{ item.value|quote }}{% endif %}"
+    label: "{{ path }} {{ item.key }}={% if item.value is not none %}{{ item.value | quote }}{% endif %}"
   vars:
     path: /etc/environment
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "{{ path }}"
-    regexp: "^{{ item.key|regex_escape }}="
-    line: "{{ item.key }}={{ item.value|quote }}"
+    regexp: "^{{ item.key | regex_escape }}="
+    line: "{{ item.key }}={{ item.value | quote }}"
     state: "{{ 'absent' if item.value is none else 'present' }}"

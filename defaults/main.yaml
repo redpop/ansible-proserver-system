@@ -44,7 +44,7 @@ system:
   timezone:
   netplan: {}
   ufw:
-    reset: "{{ system_ufw_reset|bool }}"
+    reset: "{{ system_ufw_reset | bool }}"
     state:
     policy:
     rules: {}
@@ -77,5 +77,5 @@ system:
       | |_) | | | (_) |__) |  __/ |   \ V /  __/ |
       | .__/|_|  \___/____/ \___|_|    \_/ \___|_|
       |_|
-    details: "{{ (((dehydrated|default({})).domains|default({})).keys()|list + ((dehydrated|default({})).domains|default({})).values()|list|sum(start=[]))|reject('eq', inventory_hostname)|reject('eq', ansible_nodename)|system_motd_sort_fqdns }}"
+    details: "{{ (((dehydrated | default({})).domains | default({})).keys() | list + ((dehydrated | default({})).domains | default({})).values() | list | sum(start=[])) | reject('eq', inventory_hostname) | reject('eq', ansible_nodename) | system_motd_sort_fqdns }}"
 system_ufw_reset: no

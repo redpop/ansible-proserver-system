@@ -2,5 +2,5 @@
   when: system.timezone
   loop:
     - "{{ system.timezone }}"
-  timezone:
+  community.general.timezone:
     name: "{{ item }}"

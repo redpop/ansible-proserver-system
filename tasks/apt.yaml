@@ -1,42 +1,43 @@
 - name: Install GPG on Ubuntu
-  apt:
+  ansible.builtin.package:
     name: gpg
-  when: ansible_distribution == 'Ubuntu'
 
 - name: Remove legacy NodeSource repository
-  file:
+  ansible.builtin.file:
     path: /etc/apt/sources.list.d/deb_nodesource_com_node_14_x.list
     state: absent
   when: nodejs.version is defined
 
 - name: Add NodeSource package signing key
-  apt_key:
+  ansible.builtin.apt_key:
     id: 9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280
     url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
     keyring: /usr/share/keyrings/nodesource.gpg
   when: nodejs.version is defined
 
 - name: Add NodeSource repository
-  copy:
+  ansible.builtin.copy:
     content: "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_{{ nodejs.version }}.x {{ ansible_distribution_release }} main"
     dest: /etc/apt/sources.list.d/nodesource.list
+    mode: "0644"
+    owner: root
   when: nodejs.version is defined
 
 - name: Update apt cache and remove unneeded packages
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
     autoremove: yes
   changed_when: false
 
 - name: Configure apt proxy
   when: system.apt.proxy
-  loop:
-    - /etc/apt/apt.conf.d/proxy.conf
-  copy:
+  ansible.builtin.copy:
+    owner: root
+    mode: "0644"
     content: |
       Acquire::http::Proxy "{{ system.apt.proxy }}";
-    dest: "{{ item }}"
+    dest: "/etc/apt/apt.conf.d/proxy.conf"
 
 - name: Install apt packages
-  apt:
-    name: "{{ system.apt.packages.items()|selectattr('1', 'eq', true)|map(attribute='0')|list }}"
+  ansible.builtin.apt:
+    name: "{{ system.apt.packages.items() | selectattr('1', 'eq', true) | map(attribute='0') | list }}"

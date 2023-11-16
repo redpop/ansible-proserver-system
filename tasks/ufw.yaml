@@ -1,33 +1,33 @@
 - name: Install UFW
-  apt:
+  ansible.builtin.apt:
     name: ufw
 
 - name: Reset UFW
   when: system.ufw.reset
-  ufw:
+  community.general.ufw:
     state: reset
 
 - name: Add UFW rules
-  loop: "{{ system.ufw.rules|dict2items|system_ufw_expand_rules }}"
-  ufw:
-    comment: "{{ item.value.comment|default(omit) }}"
-    delete: "{{ item.value.delete|default(omit) }}"
-    direction: "{{ item.value.direction|default(omit) }}"
-    from_ip: "{{ item.value.from_ip|default(omit) }}"
-    from_port: "{{ item.value.from_port|default(omit) }}"
-    interface: "{{ item.value.interface|default(omit) }}"
-    log: "{{ item.value.log|default(omit) }}"
-    proto: "{{ item.value.proto|default(omit) }}"
-    route: "{{ item.value.route|default(omit) }}"
-    rule: "{{ item.value.rule|default(omit) }}"
-    to_ip: "{{ item.value.to_ip|default(omit) }}"
-    to_port: "{{ item.value.to_port|default(omit) }}"
+  loop: "{{ system.ufw.rules | dict2items | system_ufw_expand_rules }}"
+  community.general.ufw:
+    comment: "{{ item.value.comment | default(omit) }}"
+    delete: "{{ item.value.delete | default(omit) }}"
+    direction: "{{ item.value.direction | default(omit) }}"
+    from_ip: "{{ item.value.from_ip | default(omit) }}"
+    from_port: "{{ item.value.from_port | default(omit) }}"
+    interface: "{{ item.value.interface | default(omit) }}"
+    log: "{{ item.value.log | default(omit) }}"
+    proto: "{{ item.value.proto | default(omit) }}"
+    route: "{{ item.value.route | default(omit) }}"
+    rule: "{{ item.value.rule | default(omit) }}"
+    to_ip: "{{ item.value.to_ip | default(omit) }}"
+    to_port: "{{ item.value.to_port | default(omit) }}"
 
 - name: Set UFW state and policy
   when: item.state and item.policy
   loop:
     - state: "{{ system.ufw.state }}"
       policy: "{{ system.ufw.policy }}"
-  ufw:
+  community.general.ufw:
     state: "{{ item.state }}"
     policy: "{{ item.policy }}"
