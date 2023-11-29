@@ -1,0 +1,28 @@
+- name: Make sure that the custom sshd configuration is included
+  notify:
+    - Restart sshd
+  ansible.builtin.lineinfile:
+    validate: "sshd -T -f %s"
+    path: /etc/ssh/sshd_config
+    line: "Include /etc/ssh/sshd_config.d/*"
+    insertbefore: "BOF"
+
+- name: Create the config folder
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d
+    state: directory
+    owner: root
+    mode: "0755"
+
+- name: Template the sshd configuration
+  notify:
+    - Restart sshd
+  ansible.builtin.copy:
+    validate: "sshd -T -f %s"
+    dest: /etc/ssh/sshd_config.d/00-ansible.conf
+    content: |
+      {% for option, value in system.sshd.config.iteritems() %}
+        {{ option }} {{ value }}
+      {% endfor %}
+    owner: root
+    mode: "0644"

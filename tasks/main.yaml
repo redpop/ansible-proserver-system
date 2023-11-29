@@ -45,3 +45,6 @@
 
 - ansible.builtin.include_tasks: motd.yaml
   when: system.features.motd
+
+- ansible.builtin.include_tasks: sshd.yaml
+  when: system.features.sshd

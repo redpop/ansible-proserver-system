@@ -1,21 +1,22 @@
 system:
   root_group: >-
-    {%- if ansible_system == 'Linux' and ansible_distribution == 'Ubuntu' -%}
+    {%- if ansible_os_family == 'Debian' -%}
       root
     {%- else -%}
       wheel
     {%- endif -%}
   features:
+    sshd: no
     proserver_fact: no
     hostname: yes
     timezone: yes
     netplan: "{{ ansible_distribution == 'Ubuntu' }}"
     systemd_resolved: no
     ufw: "{{ ansible_distribution == 'Ubuntu' }}"
-    sysctl: "{{ ansible_distribution == 'Ubuntu' }}"
+    sysctl: "{{ ansible_system == 'Linux' }}"
     hosts: yes
     environment: yes
-    apt: "{{ ansible_distribution == 'Ubuntu' }}"
+    apt: "{{ ansible_os_family == 'Debian' }}"
     proserver_user: no
     postfix: no
     users: yes
