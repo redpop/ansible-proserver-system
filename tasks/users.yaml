@@ -72,7 +72,7 @@
       list
       }}
     append: yes
-    shell: "{{ item.value.shell | default('/bin/bash', true) }}"
+    shell: "{{ item.value.shell | default(which_bash.stdout, true) }}"
   loop: "{{ system.users | dict2items | list }}"
   loop_control:
     label: "{{ item.key }}"
