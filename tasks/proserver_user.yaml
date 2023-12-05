@@ -1,5 +1,12 @@
+---
+- name: Check the path of the bash executable
+  changed_when: no
+  register: which_bash
+  ansible.builtin.command:
+    cmd: which bash
+
 - name: Create proserver user
   ansible.builtin.user:
     name: proserver
     home: /var/www
-    shell: /bin/bash
+    shell: "{{ which_bash.stdout }}"
