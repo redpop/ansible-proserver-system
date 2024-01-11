@@ -1,3 +1,15 @@
+- name: Make sure that sudo is installed
+  when: ansible_os_family == "Debian"
+  ansible.builtin.package:
+    name: sudo
+
+- name: Create sudoers.d folder
+  ansible.builtin.file:
+    mode: "0755"
+    path: "{{ system.prefix.sudoers }}/sudoers.d"
+    owner: root
+    state: directory
+
 - name: Configure sudoers
   vars:
     dest: "{{ system.prefix.sudoers }}/sudoers.d/{{ item.key }}"

@@ -1,5 +1,6 @@
+---
 - name: Create proserver user
   ansible.builtin.user:
     name: proserver
     home: /var/www
-    shell: /bin/bash
+    shell: "{{ which_bash.stdout }}"

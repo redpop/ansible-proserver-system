@@ -1,3 +1,9 @@
+- name: Check the path of the bash executable
+  changed_when: no
+  register: which_bash
+  ansible.builtin.command:
+    cmd: which bash
+
 - ansible.builtin.include_tasks: proserver_fact.yaml
   when: system.features.proserver_fact
 
@@ -45,3 +51,6 @@
 
 - ansible.builtin.include_tasks: motd.yaml
   when: system.features.motd
+
+- ansible.builtin.include_tasks: sshd.yaml
+  when: system.features.sshd

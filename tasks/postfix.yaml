@@ -72,7 +72,7 @@
             line: "{{ item.key }} {{ item.value }}"
 
 - name: Install Postfix
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible_os_family == 'Debian'
   ansible.builtin.package:
     name: postfix
 
