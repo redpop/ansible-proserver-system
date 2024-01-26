@@ -5,7 +5,7 @@
       {%- set user_authorized_key_pairs = [] -%}
       {%- for user, user_info in system.users.items() -%}
         {%- set user_authorized_key_list = [] -%}
-        {%- for authorized_key_list in (user_info.authorized_keys|default([], true)).values() -%}
+        {%- for authorized_key_list in (user_info.authorized_keys|default({}, true)).values() -%}
           {%- if authorized_key_list is string -%}
             {%- set _ = user_authorized_key_list.append(authorized_key_list) -%}
           {%- else -%}
