@@ -4,7 +4,7 @@
 
 - name: Remove legacy NodeSource repository
   ansible.builtin.file:
-    path: /etc/apt/sources.list.d/deb_nodesource_com_node_14_x.list
+    path: /etc/apt/sources.list.d/nodesource.list
     state: absent
   when: nodejs.version is defined
 
